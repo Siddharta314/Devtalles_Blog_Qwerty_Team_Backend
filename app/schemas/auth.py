@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
+from app.models.user import UserRole
 
 
 class RegisterRequest(BaseModel):
@@ -13,6 +14,7 @@ class UserPublic(BaseModel):
     name: str
     lastname: str
     email: EmailStr
+    role: UserRole
     model_config = {"from_attributes": True}
 
 
@@ -22,5 +24,12 @@ class LoginRequest(BaseModel):
 
 
 class LoginResponse(BaseModel):
-    message: str
     user: UserPublic
+    access_token: str
+    token_type: str = "bearer"
+
+
+class TokenData(BaseModel):
+    sub: str  # user_id
+    email: str
+    role: UserRole
