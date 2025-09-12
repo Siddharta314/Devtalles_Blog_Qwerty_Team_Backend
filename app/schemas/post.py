@@ -3,13 +3,8 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 
 from app.schemas.auth import UserPublic
-
-
-# Import here to avoid circular imports
-class CategoryPublic(BaseModel):
-    id: int
-    name: str
-    description: Optional[str]
+from app.schemas.tag import TagPublic
+from app.schemas.category import CategoryPublic
 
 
 class PostBase(BaseModel):
@@ -21,7 +16,7 @@ class PostBase(BaseModel):
 
 
 class PostCreate(PostBase):
-    pass
+    tags: Optional[List[str]] = Field(None, description="List of tag names")
 
 
 class PostUpdate(BaseModel):
@@ -30,6 +25,7 @@ class PostUpdate(BaseModel):
     images: Optional[List[str]] = None
     video: Optional[str] = Field(None, max_length=500)
     category_id: Optional[int] = None
+    tags: Optional[List[str]] = Field(None, description="List of tag names")
 
 
 class PostPublic(PostBase):
@@ -37,6 +33,7 @@ class PostPublic(PostBase):
     author_id: int
     author: UserPublic
     category: Optional[CategoryPublic] = None
+    tags: List[TagPublic] = Field(default_factory=list)
     created_at: datetime
     updated_at: datetime
 

@@ -34,6 +34,7 @@ def create_post(
             images=post_data.images,
             video=post_data.video,
             category_id=post_data.category_id,
+            tags=post_data.tags,
         )
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
@@ -96,6 +97,7 @@ def update_post(
             images=post_data.images,
             video=post_data.video,
             category_id=post_data.category_id,
+            tags=post_data.tags,
         )
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
