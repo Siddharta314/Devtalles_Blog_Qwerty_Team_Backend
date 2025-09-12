@@ -43,3 +43,9 @@ class Post(TimestampMixin, Base):
         cascade="all, delete-orphan",
         lazy="selectin",
     )
+    tags = relationship(
+        "Tag",
+        secondary="post_tags",
+        back_populates="posts",
+        lazy="selectin",
+    )
