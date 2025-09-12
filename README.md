@@ -13,9 +13,17 @@ uv run uvicorn app.main:app --reload
 
 
 ## Routes: 
+### Auth
 * POST `/api/auth/register` -> registro: valida email único, crea usuario con password hasheado.
 * POST `/api/auth/login`    -> login: verifica credenciales y retorna datos del usuario.
-
+### Posts
+* POST `/api/posts/` -> Crear un nuevo post. 🔒 Requiere autenticación (token).
+* GET `/api/posts/` -> Listar posts con paginación (`skip`, `limit`) y filtro opcional por autor. 🔒 Solo accesible por admin.
+* GET `/api/posts/{id}` -> Obtener un post específico por su ID. ✅ Público.
+* PUT `/api/posts/{id}` -> Actualizar un post existente. 🔒 Requiere autenticación y ser el autor o admin.
+* DELETE `/api/posts/{id}` -> Eliminar (soft delete) un post. 🔒 Requiere autenticación y ser el autor o admin.
+* GET `/api/posts/author/{id}` -> Listar todos los posts de un autor específico. ✅ Público.
+* GET `/api/posts/me/posts` -> Listar todos los posts del usuario autenticado. 🔒 Requiere autenticación (token).
 
 ## Database Schema
 
