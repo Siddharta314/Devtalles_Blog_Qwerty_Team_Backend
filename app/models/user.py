@@ -33,6 +33,12 @@ class User(TimestampMixin, Base):
         cascade="all, delete-orphan",
         lazy="selectin",
     )
+    comments = relationship(
+        "Comment",
+        back_populates="author",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+    )
 
     def set_password(self, password: str) -> None:
         self.hashed_password = pwd_context.hash(password)
