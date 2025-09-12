@@ -17,6 +17,5 @@ class Comment(TimestampMixin, Base):
         ForeignKey("posts.id"), nullable=False, index=True
     )
 
-    # Relationships
     author = relationship("User", back_populates="comments", lazy="joined")
     post = relationship("Post", back_populates="comments", lazy="joined")
