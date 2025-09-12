@@ -31,6 +31,14 @@ uv run uvicorn app.main:app --reload
 * PUT `/api/comments/{id}` -> Actualizar un comentario. 🔒 Solo autor o admin.
 * DELETE `/api/comments/{id}` -> Eliminar un comentario (soft delete). 🔒 Solo autor o admin.
 * GET `/api/comments/me/comments` -> Listar todos los comentarios del usuario autenticado. 🔒 Requiere autenticación (token).
+### Likes
+* POST `/api/likes/` -> Dar like a un post. 🔒 Requiere autenticación (token).
+* DELETE `/api/likes/post/{id}` -> Quitar like de un post. 🔒 Requiere autenticación (token).
+* POST `/api/likes/toggle` -> Toggle like/unlike en un post (conveniente). 🔒 Requiere autenticación (token).
+* GET `/api/likes/post/{id}/stats` -> Obtener estadísticas de likes de un post + estado del usuario. 🔒 Requiere autenticación (token).
+* GET `/api/likes/post/{id}` -> Listar todos los likes de un post específico. ✅ Público.
+* GET `/api/likes/me/posts` -> Listar todos los posts que me gustan. 🔒 Requiere autenticación (token).
+* GET `/api/likes/check/{id}` -> Verificar si me gusta un post específico. 🔒 Requiere autenticación (token).
 
 ## Database Schema
 
@@ -51,9 +59,9 @@ uv run uvicorn app.main:app --reload
 Dependencias de seguridad (`get_current_user`, `get_current_admin_user`)
 - ✅ CRUD de `Post` (crear, listar, ver detalle, actualizar, borrar)
 - ✅ Implementar `Comment` (modelo + endpoints)
+- ✅ Implementar `Like` (modelo + endpoints con PK compuesta)
 
 ### 🚧 En progreso / Próximos pasos
-- 🚧 Implementar `Like` (modelo + endpoints)
 - 🚧 Implementar `Category` y `Tag` con relaciones
 - 🚧 Añadir filtros y búsqueda de posts (categoría, tag, texto)
 - 🚧 Subida y gestión de imágenes en posts
