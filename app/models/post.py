@@ -17,9 +17,17 @@ class Post(TimestampMixin, Base):
     author_id: Mapped[int] = mapped_column(
         ForeignKey("users.id"), nullable=False, index=True
     )
+    category_id: Mapped[int | None] = mapped_column(
+        ForeignKey("categories.id", ondelete="SET NULL"), nullable=True
+    )
 
     author = relationship(
         "User",
+        back_populates="posts",
+        lazy="joined",
+    )
+    category = relationship(
+        "Category",
         back_populates="posts",
         lazy="joined",
     )
