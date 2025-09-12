@@ -29,3 +29,9 @@ class Post(TimestampMixin, Base):
         cascade="all, delete-orphan",
         lazy="selectin",
     )
+    likes = relationship(
+        "Like",
+        back_populates="post",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+    )

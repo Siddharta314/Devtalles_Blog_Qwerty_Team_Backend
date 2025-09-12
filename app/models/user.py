@@ -39,6 +39,12 @@ class User(TimestampMixin, Base):
         cascade="all, delete-orphan",
         lazy="selectin",
     )
+    likes = relationship(
+        "Like",
+        back_populates="user",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+    )
 
     def set_password(self, password: str) -> None:
         self.hashed_password = pwd_context.hash(password)
