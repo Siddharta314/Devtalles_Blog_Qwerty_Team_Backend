@@ -77,14 +77,14 @@ Dependencias de seguridad (`get_current_user`, `get_current_admin_user`)
 - ✅ Implementar `Like` (modelo + endpoints con PK compuesta)
 - ✅ Implementar `Category` (modelo + endpoints solo admin + relación opcional con Post)
 - ✅ Implementar `Tag` con relaciones many-to-many con Post
+- ✅ Dockerfile + docker-compose (FastAPI + PostgreSQL)
+- ✅ Migración a PostgreSQL (modo producción)
 
 ### 🚧 En progreso / Próximos pasos
 - 🚧 Añadir filtros y búsqueda de posts (categoría, tag, texto)
 - 🚧 Subida y gestión de imágenes en posts
 - 🚧 Roles de usuario (`admin`, `user`) con autorización en rutas protegidas
 - 🚧 Crear archivo `requests.http` para probar todos los endpoints desde VSCode REST Client
-- 🚧 Migración a PostgreSQL (modo producción)
-- 🚧 Dockerfile + docker-compose (FastAPI + PostgreSQL)
 - 🚧 Tests automáticos con Pytest
 - 🚧 Despliegue en servicio cloud
 

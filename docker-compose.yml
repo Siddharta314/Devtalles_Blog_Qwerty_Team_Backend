@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  backend:
+    build: .
+    container_name: devtalles-backend
+    command: uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16
+    container_name: devtalles-db
+    restart: always
+    environment:
+      POSTGRES_USER: devtalles
+      POSTGRES_PASSWORD: devtalles
+      POSTGRES_DB: devtalles_blog
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
