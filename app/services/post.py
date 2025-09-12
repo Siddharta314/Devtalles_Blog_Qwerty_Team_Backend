@@ -18,6 +18,7 @@ class PostService:
         images: Optional[List[str]] = None,
         video: Optional[str] = None,
         category_id: Optional[int] = None,
+        tags: Optional[List[str]] = None,
     ) -> Post:
         if category_id is not None:
             from app.models.category import Category
@@ -39,6 +40,16 @@ class PostService:
             category_id=category_id,
         )
         self.db.add(post)
+        self.db.flush()  # Get ID without committing
+
+        # Handle tags
+        if tags:
+            from app.services.tag import TagService
+
+            tag_service = TagService(self.db)
+            post_tags = tag_service.get_or_create_tags(tags)
+            post.tags = post_tags
+
         self.db.commit()
         self.db.refresh(post)
         return post
@@ -69,6 +80,7 @@ class PostService:
         images: Optional[List[str]] = None,
         video: Optional[str] = None,
         category_id: Optional[int] = None,
+        tags: Optional[List[str]] = None,
     ) -> Optional[Post]:
         """Update an existing post."""
         post = self.get_post_by_id(post_id)
@@ -96,6 +108,14 @@ class PostService:
             post.video = video
         if category_id is not None:
             post.category_id = category_id
+
+        # Handle tags update
+        if tags is not None:
+            from app.services.tag import TagService
+
+            tag_service = TagService(self.db)
+            post_tags = tag_service.get_or_create_tags(tags)
+            post.tags = post_tags
 
         self.db.commit()
         self.db.refresh(post)

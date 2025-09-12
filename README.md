@@ -17,10 +17,10 @@ uv run uvicorn app.main:app --reload
 * POST `/api/auth/register` -> registro: valida email único, crea usuario con password hasheado.
 * POST `/api/auth/login`    -> login: verifica credenciales y retorna datos del usuario.
 ### Posts
-* POST `/api/posts/` -> Crear un nuevo post. 🔒 Requiere autenticación (token).
+* POST `/api/posts/` -> Crear un nuevo post. 🔒 Requiere autenticación (token). Soporta `tags` (array de strings) que se crean automáticamente si no existen.
 * GET `/api/posts/` -> Listar posts con paginación (`skip`, `limit`) y filtro opcional por autor. 🔒 Solo accesible por admin.
-* GET `/api/posts/{id}` -> Obtener un post específico por su ID. ✅ Público.
-* PUT `/api/posts/{id}` -> Actualizar un post existente. 🔒 Requiere autenticación y ser el autor o admin.
+* GET `/api/posts/{id}` -> Obtener un post específico por su ID. ✅ Público. Incluye tags asociados.
+* PUT `/api/posts/{id}` -> Actualizar un post existente. 🔒 Requiere autenticación y ser el autor o admin. Soporta `tags` (reemplaza lista completa).
 * DELETE `/api/posts/{id}` -> Eliminar (soft delete) un post. 🔒 Requiere autenticación y ser el autor o admin.
 * GET `/api/posts/author/{id}` -> Listar todos los posts de un autor específico. ✅ Público.
 * GET `/api/posts/me/posts` -> Listar todos los posts del usuario autenticado. 🔒 Requiere autenticación (token).
@@ -46,6 +46,14 @@ uv run uvicorn app.main:app --reload
 * GET `/api/categories/{id}` -> Obtener una categoría específica por ID. 🔒 Solo admin.
 * PUT `/api/categories/{id}` -> Actualizar una categoría existente. 🔒 Solo admin.
 * DELETE `/api/categories/{id}` -> Eliminar una categoría (posts quedan sin categoría). 🔒 Solo admin.
+### Tags
+* POST `/api/tags/` -> Crear un nuevo tag. 🔒 Solo admin.
+* GET `/api/tags/` -> Listar todos los tags con paginación. ✅ Público.
+* GET `/api/tags/popular` -> Obtener tags más populares por número de posts. ✅ Público.
+* GET `/api/tags/stats` -> Obtener tags con estadísticas de posts. 🔒 Solo admin.
+* GET `/api/tags/{id}` -> Obtener un tag específico por ID. 🔒 Solo admin.
+* PUT `/api/tags/{id}` -> Actualizar un tag existente. 🔒 Solo admin.
+* DELETE `/api/tags/{id}` -> Eliminar un tag (posts pierden este tag). 🔒 Solo admin.
 
 ## Database Schema
 
@@ -68,9 +76,9 @@ Dependencias de seguridad (`get_current_user`, `get_current_admin_user`)
 - ✅ Implementar `Comment` (modelo + endpoints)
 - ✅ Implementar `Like` (modelo + endpoints con PK compuesta)
 - ✅ Implementar `Category` (modelo + endpoints solo admin + relación opcional con Post)
+- ✅ Implementar `Tag` con relaciones many-to-many con Post
 
 ### 🚧 En progreso / Próximos pasos
-- 🚧 Implementar `Tag` con relaciones many-to-many con Post
 - 🚧 Añadir filtros y búsqueda de posts (categoría, tag, texto)
 - 🚧 Subida y gestión de imágenes en posts
 - 🚧 Roles de usuario (`admin`, `user`) con autorización en rutas protegidas
