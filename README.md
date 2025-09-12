@@ -24,6 +24,13 @@ uv run uvicorn app.main:app --reload
 * DELETE `/api/posts/{id}` -> Eliminar (soft delete) un post. 🔒 Requiere autenticación y ser el autor o admin.
 * GET `/api/posts/author/{id}` -> Listar todos los posts de un autor específico. ✅ Público.
 * GET `/api/posts/me/posts` -> Listar todos los posts del usuario autenticado. 🔒 Requiere autenticación (token).
+### Comments
+* POST `/api/comments/` -> Crear un comentario en un post. 🔒 Requiere autenticación (token).
+* GET `/api/comments/{id}` -> Obtener un comentario específico por ID. ✅ Público.
+* GET `/api/comments/post/{post_id}` -> Listar comentarios de un post con paginación. ✅ Público.
+* PUT `/api/comments/{id}` -> Actualizar un comentario. 🔒 Solo autor o admin.
+* DELETE `/api/comments/{id}` -> Eliminar un comentario (soft delete). 🔒 Solo autor o admin.
+* GET `/api/comments/me/comments` -> Listar todos los comentarios del usuario autenticado. 🔒 Requiere autenticación (token).
 
 ## Database Schema
 
@@ -43,9 +50,9 @@ uv run uvicorn app.main:app --reload
 - ✅ Generar y devolver JWT en el login (`create_access_token`)
 Dependencias de seguridad (`get_current_user`, `get_current_admin_user`)
 - ✅ CRUD de `Post` (crear, listar, ver detalle, actualizar, borrar)
+- ✅ Implementar `Comment` (modelo + endpoints)
 
 ### 🚧 En progreso / Próximos pasos
-- 🚧 Implementar `Comment` (modelo + endpoints)
 - 🚧 Implementar `Like` (modelo + endpoints)
 - 🚧 Implementar `Category` y `Tag` con relaciones
 - 🚧 Añadir filtros y búsqueda de posts (categoría, tag, texto)

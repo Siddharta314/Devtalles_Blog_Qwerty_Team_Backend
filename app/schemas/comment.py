@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List
 from pydantic import BaseModel, Field
 
 from app.schemas.auth import UserPublic
@@ -14,7 +14,7 @@ class CommentCreate(CommentBase):
 
 
 class CommentUpdate(BaseModel):
-    content: Optional[str] = Field(None, min_length=1, max_length=2000)
+    content: str = Field(min_length=1, max_length=2000)
 
 
 class CommentPublic(CommentBase):
