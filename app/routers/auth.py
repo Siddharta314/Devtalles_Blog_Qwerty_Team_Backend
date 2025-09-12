@@ -6,19 +6,21 @@ from app.schemas.auth import LoginRequest, LoginResponse, RegisterRequest, UserP
 from app.services.user import UserService
 
 
-auth_router = APIRouter()
+auth_router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
 @auth_router.post(
-    "/", tags=["Auth"], response_model=UserPublic, status_code=status.HTTP_201_CREATED
+    "/register",
+    response_model=UserPublic,
+    status_code=status.HTTP_201_CREATED,
 )
 def register(payload: RegisterRequest, db: Session = Depends(get_db)) -> UserPublic:
     user_service = UserService(db)
 
-    existing = user_service.get_user_by_email(payload.email)
-    if existing is not None:
+    if user_service.get_user_by_email(payload.email):
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT, detail="Email already registered"
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Email already registered",
         )
 
     user = user_service.create_user(
@@ -27,16 +29,14 @@ def register(payload: RegisterRequest, db: Session = Depends(get_db)) -> UserPub
         email=payload.email,
         password=payload.password,
     )
-    return UserPublic(
-        id=user.id, name=user.name, lastname=user.lastname, email=user.email
-    )
+    return UserPublic.model_validate(user)
 
 
-@auth_router.post("/login", tags=["Auth"], response_model=LoginResponse)
+@auth_router.post("/login", response_model=LoginResponse)
 def login(payload: LoginRequest, db: Session = Depends(get_db)) -> LoginResponse:
     user_service = UserService(db)
-
     user = user_service.authenticate_user(payload.email, payload.password)
+
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
@@ -44,10 +44,5 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)) -> LoginResponse
 
     return LoginResponse(
         message="Login successful",
-        user=UserPublic(
-            id=user.id,
-            name=user.name,
-            lastname=user.lastname,
-            email=user.email,
-        ),
+        user=UserPublic.model_validate(user),
     )
