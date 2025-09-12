@@ -1,12 +1,18 @@
 from passlib.context import CryptContext
-from sqlalchemy import Integer, String
+from sqlalchemy import Integer, String, Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+import enum
 
 from app.db import Base
 from app.models import TimestampMixin
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+class UserRole(enum.Enum):
+    ADMIN = "admin"
+    USER = "user"
 
 
 class User(TimestampMixin, Base):
@@ -17,6 +23,9 @@ class User(TimestampMixin, Base):
     lastname: Mapped[str] = mapped_column(String(100), nullable=False)
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     hashed_password: Mapped[str] = mapped_column(String(512), nullable=False)
+    role: Mapped[UserRole] = mapped_column(
+        SQLEnum(UserRole), default=UserRole.USER, nullable=False
+    )
 
     posts = relationship(
         "Post",
