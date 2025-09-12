@@ -26,13 +26,17 @@ def create_post(
     """Create a new post. Requires authentication."""
     post_service = PostService(db)
 
-    post = post_service.create_post(
-        title=post_data.title,
-        description=post_data.description,
-        author_id=current_user.id,
-        images=post_data.images,
-        video=post_data.video,
-    )
+    try:
+        post = post_service.create_post(
+            title=post_data.title,
+            description=post_data.description,
+            author_id=current_user.id,
+            images=post_data.images,
+            video=post_data.video,
+            category_id=post_data.category_id,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
     return PostPublic.model_validate(post)
 
@@ -84,13 +88,17 @@ def update_post(
             detail="Not authorized to update this post",
         )
 
-    updated_post = post_service.update_post(
-        post_id=post_id,
-        title=post_data.title,
-        description=post_data.description,
-        images=post_data.images,
-        video=post_data.video,
-    )
+    try:
+        updated_post = post_service.update_post(
+            post_id=post_id,
+            title=post_data.title,
+            description=post_data.description,
+            images=post_data.images,
+            video=post_data.video,
+            category_id=post_data.category_id,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
     return PostPublic.model_validate(updated_post)
 

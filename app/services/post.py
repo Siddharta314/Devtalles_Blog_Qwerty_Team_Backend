@@ -17,13 +17,26 @@ class PostService:
         author_id: int,
         images: Optional[List[str]] = None,
         video: Optional[str] = None,
+        category_id: Optional[int] = None,
     ) -> Post:
+        if category_id is not None:
+            from app.models.category import Category
+
+            category = (
+                self.db.query(Category)
+                .filter(Category.id == category_id, Category.deleted_at.is_(None))
+                .first()
+            )
+            if not category:
+                raise ValueError("Category not found")
+
         post = Post(
             title=title,
             description=description,
             author_id=author_id,
             images=images or [],
             video=video,
+            category_id=category_id,
         )
         self.db.add(post)
         self.db.commit()
@@ -55,11 +68,23 @@ class PostService:
         description: Optional[str] = None,
         images: Optional[List[str]] = None,
         video: Optional[str] = None,
+        category_id: Optional[int] = None,
     ) -> Optional[Post]:
         """Update an existing post."""
         post = self.get_post_by_id(post_id)
         if not post:
             return None
+
+        if category_id is not None:
+            from app.models.category import Category
+
+            category = (
+                self.db.query(Category)
+                .filter(Category.id == category_id, Category.deleted_at.is_(None))
+                .first()
+            )
+            if not category:
+                raise ValueError("Category not found")
 
         if title is not None:
             post.title = title
@@ -69,6 +94,8 @@ class PostService:
             post.images = images
         if video is not None:
             post.video = video
+        if category_id is not None:
+            post.category_id = category_id
 
         self.db.commit()
         self.db.refresh(post)
