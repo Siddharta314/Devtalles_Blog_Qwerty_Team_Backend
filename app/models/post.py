@@ -23,3 +23,9 @@ class Post(TimestampMixin, Base):
         back_populates="posts",
         lazy="joined",
     )
+    comments = relationship(
+        "Comment",
+        back_populates="post",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+    )
