@@ -41,17 +41,17 @@ uv run uvicorn app.main:app --reload
 - ✅ Configurar SQLAlchemy
 - ✅ Auth: crear `schemas` y `router` con endpoints `register` y `login`
 - ✅ Generar y devolver JWT en el login (`create_access_token`)
-- ✅ Dependencias de seguridad (`get_current_user`, `get_current_admin_user`)
+Dependencias de seguridad (`get_current_user`, `get_current_admin_user`)
+- ✅ CRUD de `Post` (crear, listar, ver detalle, actualizar, borrar)
 
 ### 🚧 En progreso / Próximos pasos
-- 🚧 CRUD de `Post` (crear, listar, ver detalle, actualizar, borrar)
-- 🚧 Relación `Post` ↔ `User` (author)
 - 🚧 Implementar `Comment` (modelo + endpoints)
 - 🚧 Implementar `Like` (modelo + endpoints)
 - 🚧 Implementar `Category` y `Tag` con relaciones
 - 🚧 Añadir filtros y búsqueda de posts (categoría, tag, texto)
 - 🚧 Subida y gestión de imágenes en posts
 - 🚧 Roles de usuario (`admin`, `user`) con autorización en rutas protegidas
+- 🚧 Crear archivo `requests.http` para probar todos los endpoints desde VSCode REST Client
 - 🚧 Migración a PostgreSQL (modo producción)
 - 🚧 Dockerfile + docker-compose (FastAPI + PostgreSQL)
 - 🚧 Tests automáticos con Pytest
