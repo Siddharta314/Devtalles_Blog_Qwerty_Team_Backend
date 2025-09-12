@@ -1,0 +1,57 @@
+```mermaid
+erDiagram
+	direction TB
+	USUARIO {
+		int id PK ""  
+		string name  ""  
+		string lastname  ""  
+		string email  ""  
+		string password  ""  
+		string description  ""  
+		enum position  ""  
+		string stack  ""  
+	}
+	ROLES {
+		int id PK ""  
+		enum name  ""  
+	}
+	POST {
+		int id PK ""  
+		string title  ""  
+		string description  ""  
+		string images  ""  
+		string video  ""  
+	}
+	COMENTS {
+		int id PK ""  
+		string content  ""  
+		datetime fecha  ""  
+	}
+	LIKES {
+		int id PK ""  
+		boolean like  ""  
+	}
+	TAGS {
+		int id PK ""  
+		string nombre  ""  
+	}
+	IMAGES {
+		int id PK ""  
+		string url  ""  
+	}
+	CATEGORIAS {
+		int id PK ""  
+		string nombre  ""  
+	}
+
+	USUARIO||--o{POST:"crea"
+	USUARIO||--o{COMENTS:"escribe"
+	USUARIO||--o{LIKES:"hace"
+	ROLES||--o{USUARIO:"asigna"
+	POST||--o{COMENTS:"tiene"
+	POST||--o{LIKES:"recibe"
+	POST||--o{TAGS:"tiene"
+	POST||--o{IMAGES:"contiene"
+	POST}o--||CATEGORIAS:"pertenece"
+```
+
