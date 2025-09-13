@@ -55,3 +55,8 @@ reset-hard:
 	$(DOCKER_COMPOSE) up -d db
 	$(PYTHON) alembic revision --autogenerate -m "Initial migration"
 	$(PYTHON) alembic upgrade head
+
+seed:
+	@echo "Poblando base de datos con datos de ejemplo..."
+	$(PYTHON) seed.py
+	@echo "Seed completado!"
