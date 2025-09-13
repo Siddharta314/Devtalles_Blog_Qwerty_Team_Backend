@@ -8,8 +8,55 @@
 
 
 
-## Installation and run with uv 
-uv run uvicorn app.main:app --reload
+## 🚀 Instalación y Configuración
+
+### 🔧 Desarrollo Local
+
+1. **Instalar dependencias con uv**
+   ```bash
+   uv sync
+   ```
+2. **Configurar variables de entorno**
+   ```bash
+   cp env.example .env
+   # Editar .env con tus configuraciones
+   ```
+3. **Inicializar la base de datos con Alembic**
+   ```bash
+   # Iniciar PostgreSQL con Docker
+   docker compose up -d db
+   
+   # Aplicar migraciones (desde el host)
+   DATABASE_URL=postgresql://devtalles:devtalles@localhost:5432/devtalles_blog uv run alembic upgrade head
+   ```
+4. **Ejecutar el servidor**
+   ```bash
+   uv run uvicorn app.main:app --reload
+   ```
+
+### 🐳 Con Docker
+
+1. **Ejecutar con Docker Compose**
+   ```bash
+   docker compose up
+   ```
+2. **Aplicar migraciones (primera vez)**
+   ```bash
+   docker compose exec backend uv run alembic upgrade head
+   ```
+
+### 📋 Migraciones con Alembic
+
+```bash
+# Generar nueva migración
+uv run alembic revision --autogenerate -m "Descripción del cambio"
+
+# Aplicar migraciones
+uv run alembic upgrade head
+
+# Ver estado actual
+uv run alembic current
+```
 
 
 ## Routes: 
@@ -71,7 +118,7 @@ uv run uvicorn app.main:app --reload
 - ✅ Configurar SQLAlchemy
 - ✅ Auth: crear `schemas` y `router` con endpoints `register` y `login`
 - ✅ Generar y devolver JWT en el login (`create_access_token`)
-Dependencias de seguridad (`get_current_user`, `get_current_admin_user`)
+- ✅ Dependencias de seguridad (`get_current_user`, `get_current_admin_user`)
 - ✅ CRUD de `Post` (crear, listar, ver detalle, actualizar, borrar)
 - ✅ Implementar `Comment` (modelo + endpoints)
 - ✅ Implementar `Like` (modelo + endpoints con PK compuesta)
@@ -79,8 +126,10 @@ Dependencias de seguridad (`get_current_user`, `get_current_admin_user`)
 - ✅ Implementar `Tag` con relaciones many-to-many con Post
 - ✅ Dockerfile + docker-compose (FastAPI + PostgreSQL)
 - ✅ Migración a PostgreSQL (modo producción)
+- ✅ Alembic
 
-### 🚧 En progreso / Próximos pasos
+### 🚧 En progreso
+- 🚧 Social Login (Discord)
 - 🚧 Añadir filtros y búsqueda de posts (categoría, tag, texto)
 - 🚧 Subida y gestión de imágenes en posts
 - 🚧 Roles de usuario (`admin`, `user`) con autorización en rutas protegidas
