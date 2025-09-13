@@ -43,5 +43,15 @@ clean:
 migrate:
 	$(PYTHON) alembic upgrade head
 
-makemigration:
+mm:
 	$(PYTHON) alembic revision --autogenerate -m "New migration"
+
+makemigration:
+	$(PYTHON) alembic revision --autogenerate -m "$(m)"
+
+reset-hard:
+	$(DOCKER_COMPOSE) down -v
+	rm -f alembic/versions/*.py
+	$(DOCKER_COMPOSE) up -d db
+	$(PYTHON) alembic revision --autogenerate -m "Initial migration"
+	$(PYTHON) alembic upgrade head
