@@ -3,7 +3,7 @@
 @admin_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJhZG1pbkBkZXZ0YWxsZXMuY29tIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzU3NzczMjYyfQ.JCmkUU5oUPkuKmQyUiZtZ3j4_z8Q5prVpFVCa36Mmw0
 
 ######################## LOGIN  user and admin  ########################
-### Login como admin ✅  
+### ✅ Login como admin
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
@@ -12,7 +12,7 @@ Content-Type: application/json
   "password": "admin123"
 }
 
-### Login como usuario normal (Carlos) ✅
+### ✅ Login como usuario normal (Carlos)
 POST  {{baseUrl}}/auth/login
 Content-Type: application/json
 
@@ -23,11 +23,11 @@ Content-Type: application/json
 
 
 ########################### POST  ###########################
-### Obtener posts públicos (lista con paginación) ✅
+### ✅ Obtener posts públicos (lista con paginación) 
 GET  {{baseUrl}}/posts?skip=0&limit=5
 Authorization: Bearer {{admin_token}}
 
-### Obtener un post específico por ID ✅
+### ✅ Obtener un post específico por ID
 GET {{baseUrl}}/posts/1
 
 ### ✅ Crear un nuevo post (usar token de admin o usuario normal en Authorization)
@@ -65,5 +65,23 @@ Authorization: Bearer {{user_token}}
 {
   "post_id": 1
 }
+
+### Stat de un post  con token (user_has_liked)
+GET  {{baseUrl}}/likes/post/1/stats
+Content-Type: application/json
+Authorization: Bearer {{user_token}}
+
+{
+  "post_id": 1
+}
+
+### Stat de un post 
+GET  {{baseUrl}}/likes/post/1
+Content-Type: application/json
+
+{
+  "post_id": 1
+}
+
 
 ########################### TAGS  ###########################

@@ -22,5 +22,8 @@ class Settings(BaseSettings):
     DISCORD_CLIENT_SECRET: str
     DISCORD_REDIRECT_URI: str
 
+    # Social auth behavior
+    ALLOW_SOCIAL_LINK_BY_EMAIL: bool = False
+
 
 settings = Settings()  # pyright: ignore[reportCallIssue]

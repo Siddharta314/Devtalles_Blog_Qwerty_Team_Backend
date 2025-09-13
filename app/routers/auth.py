@@ -119,6 +119,9 @@ async def discord_callback(
             auth_provider=ProviderType.DISCORD,
         )
 
+    except HTTPException:
+        # Propagar HTTPException generadas explícitamente (como 401)
+        raise
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
     except Exception:

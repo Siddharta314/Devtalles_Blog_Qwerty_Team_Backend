@@ -103,6 +103,20 @@ class DiscordAuthService:
         name = name_parts[0]
         lastname = name_parts[1] if len(name_parts) > 1 else ""
 
+        # Debug info (solo en desarrollo)
+        from app.core.config import settings as _settings
+        if _settings.DEBUG:
+            print(
+                "[DiscordAuth] Creating user:",
+                {
+                    "discord_id": discord_id,
+                    "email": email,
+                    "username": username,
+                    "global_name": global_name,
+                    "avatar_url": avatar_url,
+                },
+            )
+
         # Crear usuario social
         user = User.create_social(
             name=name, lastname=lastname, email=email, image=avatar_url
@@ -124,6 +138,43 @@ class DiscordAuthService:
         self.db.commit()
         self.db.refresh(user)
 
+        return user
+
+    def link_discord_to_existing_user(
+        self,
+        user: User,
+        discord_id: str,
+        access_token: str,
+        refresh_token: Optional[str] = None,
+    ) -> User:
+        """Vincula una cuenta Discord a un usuario existente (por email)."""
+        existing_provider = (
+            self.db.query(AuthProvider)
+            .filter(AuthProvider.user_id == user.id)
+            .first()
+        )
+
+        if existing_provider:
+            # Ya hay un proveedor asociado: actualizar tokens si es DISCORD
+            if existing_provider.provider != ProviderType.DISCORD:
+                # En este proyecto solo hay DISCORD como provider, pero por seguridad
+                existing_provider.provider = ProviderType.DISCORD
+            existing_provider.provider_id = discord_id
+            existing_provider.access_token = access_token
+            if refresh_token:
+                existing_provider.refresh_token = refresh_token
+        else:
+            auth_provider = AuthProvider(
+                user_id=user.id,
+                provider=ProviderType.DISCORD,
+                provider_id=discord_id,
+                access_token=access_token,
+                refresh_token=refresh_token,
+            )
+            self.db.add(auth_provider)
+
+        self.db.commit()
+        self.db.refresh(user)
         return user
 
     def update_discord_tokens(
@@ -163,6 +214,12 @@ class DiscordAuthService:
         discord_id = discord_user["id"]
         email = discord_user.get("email")
 
+        # Fallback: si no hay email de Discord, generar uno sintético estable
+        if not email:
+            email = f"discord_{discord_id}@discord.local"
+            # Mutar el payload para que los siguientes pasos usen este email
+            discord_user["email"] = email
+
         # Buscar usuario existente por Discord ID
         existing_user = self.find_user_by_discord_id(discord_id)
 
@@ -175,8 +232,14 @@ class DiscordAuthService:
         if email:
             email_user = self.find_user_by_email(email)
             if email_user:
-                # Email ya registrado con otro método
-                raise ValueError(f"User with email {email} already exists")
+                # Según configuración, vincular o rechazar
+                if settings.ALLOW_SOCIAL_LINK_BY_EMAIL:
+                    return self.link_discord_to_existing_user(
+                        email_user, discord_id, access_token, refresh_token
+                    )
+                else:
+                    # Rechazar el intento para evitar colisión de email
+                    raise ValueError(f"User with email {email} already exists")
 
         # Crear nuevo usuario
         return self.create_discord_user(discord_user, access_token, refresh_token)
