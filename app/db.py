@@ -1,7 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from app.core.config import settings
 
-DATABASE_URL = "sqlite:///./dev.db"
+DATABASE_URL = settings.DATABASE_URL
 
 
 class Base(DeclarativeBase):
@@ -10,9 +11,9 @@ class Base(DeclarativeBase):
 
 engine = create_engine(
     DATABASE_URL,
-    connect_args={"check_same_thread": False}
-    if DATABASE_URL.startswith("sqlite")
-    else {},
+    pool_pre_ping=True,
+    pool_recycle=300,
+    echo=settings.DEBUG,
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -24,10 +25,3 @@ def get_db():
         yield db
     finally:
         db.close()
-
-
-def init_db():
-    import app.models.user
-    import app.models.post
-
-    Base.metadata.create_all(bind=engine)
