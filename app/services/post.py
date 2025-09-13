@@ -14,6 +14,7 @@ class PostService:
         self,
         title: str,
         description: str,
+        content: str,
         author_id: int,
         images: Optional[List[str]] = None,
         video: Optional[str] = None,
@@ -34,6 +35,7 @@ class PostService:
         post = Post(
             title=title,
             description=description,
+            content=content,
             author_id=author_id,
             images=images or [],
             video=video,
@@ -77,6 +79,7 @@ class PostService:
         post_id: int,
         title: Optional[str] = None,
         description: Optional[str] = None,
+        content: Optional[str] = None,
         images: Optional[List[str]] = None,
         video: Optional[str] = None,
         category_id: Optional[int] = None,
@@ -102,6 +105,8 @@ class PostService:
             post.title = title
         if description is not None:
             post.description = description
+        if content is not None:
+            post.content = content
         if images is not None:
             post.images = images
         if video is not None:

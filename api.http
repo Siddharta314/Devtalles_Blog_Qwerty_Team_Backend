@@ -1,0 +1,69 @@
+@baseUrl = http://localhost:8000/api
+@user_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwiZW1haWwiOiJjYXJsb3NAZGV2dGFsbGVzLmNvbSIsInJvbGUiOiJ1c2VyIiwiZXhwIjoxNzU3Nzc0MDIyfQ.TZX4J9t6YH-WTv2KNLYxOYf9RQNZY5V6j78ZxDL1atc
+@admin_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJhZG1pbkBkZXZ0YWxsZXMuY29tIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzU3NzczMjYyfQ.JCmkUU5oUPkuKmQyUiZtZ3j4_z8Q5prVpFVCa36Mmw0
+
+######################## LOGIN  user and admin  ########################
+### Login como admin ✅  
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@devtalles.com",
+  "password": "admin123"
+}
+
+### Login como usuario normal (Carlos) ✅
+POST  {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "carlos@devtalles.com",
+  "password": "carlos123"
+}
+
+
+########################### POST  ###########################
+### Obtener posts públicos (lista con paginación) ✅
+GET  {{baseUrl}}/posts?skip=0&limit=5
+Authorization: Bearer {{admin_token}}
+
+### Obtener un post específico por ID ✅
+GET {{baseUrl}}/posts/1
+
+### ✅ Crear un nuevo post (usar token de admin o usuario normal en Authorization)
+POST  {{baseUrl}}/posts
+Content-Type: application/json
+Authorization: Bearer {{user_token}}
+
+{
+  "title": "Nuevo post de prueba",
+  "description": "Contenido de prueba creado desde REST Client",
+  "content": "Este es el contenido del post de prueba. Aquí va el texto completo del post.",
+  "category_id": 1,
+  "tags": ["testing", "fastapi"]
+}
+
+
+########################### COMMENT  ###########################
+### Crear comentario en un post
+POST {{baseUrl}}/comments
+Content-Type: application/json
+Authorization: Bearer {{user_token}}
+
+{
+  "post_id": 1,
+  "content": "Este es un comentario de prueba desde REST Client"
+}
+
+
+########################### LIKE  ###########################
+### Dar like a un post (toggle)
+POST {{baseUrl}}/likes/toggle
+Content-Type: application/json
+Authorization: Bearer {{user_token}}
+
+{
+  "post_id": 1
+}
+
+########################### TAGS  ###########################

@@ -10,6 +10,7 @@ from app.schemas.category import CategoryPublic
 class PostBase(BaseModel):
     title: str = Field(min_length=1, max_length=200)
     description: str = Field(min_length=1)
+    content: str = Field(min_length=1)
     images: Optional[List[str]] = None
     video: Optional[str] = Field(None, max_length=500)
     category_id: Optional[int] = None
@@ -22,6 +23,7 @@ class PostCreate(PostBase):
 class PostUpdate(BaseModel):
     title: Optional[str] = Field(None, min_length=1, max_length=200)
     description: Optional[str] = Field(None, min_length=1)
+    content: Optional[str] = Field(None, min_length=1)
     images: Optional[List[str]] = None
     video: Optional[str] = Field(None, max_length=500)
     category_id: Optional[int] = None

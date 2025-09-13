@@ -30,6 +30,7 @@ def create_post(
         post = post_service.create_post(
             title=post_data.title,
             description=post_data.description,
+            content=post_data.content,
             author_id=current_user.id,
             images=post_data.images,
             video=post_data.video,
@@ -94,6 +95,7 @@ def update_post(
             post_id=post_id,
             title=post_data.title,
             description=post_data.description,
+            content=post_data.content,
             images=post_data.images,
             video=post_data.video,
             category_id=post_data.category_id,

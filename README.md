@@ -127,13 +127,13 @@ uv run alembic current
 - ✅ Dockerfile + docker-compose (FastAPI + PostgreSQL)
 - ✅ Migración a PostgreSQL (modo producción)
 - ✅ Alembic
+- ✅ Social Login (Discord)
+- ✅ Crear archivo `requests.http` para probar todos los endpoints desde VSCode REST Client
 
 ### 🚧 En progreso
-- 🚧 Social Login (Discord)
 - 🚧 Añadir filtros y búsqueda de posts (categoría, tag, texto)
 - 🚧 Subida y gestión de imágenes en posts
 - 🚧 Roles de usuario (`admin`, `user`) con autorización en rutas protegidas
-- 🚧 Crear archivo `requests.http` para probar todos los endpoints desde VSCode REST Client
 - 🚧 Tests automáticos con Pytest
 - 🚧 Despliegue en servicio cloud
 
