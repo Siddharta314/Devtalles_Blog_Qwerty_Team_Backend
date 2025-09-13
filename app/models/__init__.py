@@ -17,3 +17,13 @@ class TimestampMixin:
     @declared_attr.directive
     def __mapper_args__(cls):
         return {"eager_defaults": True}
+
+
+# Importar todos los modelos para que Alembic los detecte
+from .user import User
+from .auth_provider import AuthProvider
+from .post import Post
+from .category import Category
+from .tag import Tag
+from .comment import Comment
+from .like import Like

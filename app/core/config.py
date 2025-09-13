@@ -17,5 +17,10 @@ class Settings(BaseSettings):
 
     ALLOWED_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:8080"]
 
+    # Discord OAuth2 Configuration
+    DISCORD_CLIENT_ID: str
+    DISCORD_CLIENT_SECRET: str
+    DISCORD_REDIRECT_URI: str
+
 
 settings = Settings()  # pyright: ignore[reportCallIssue]
