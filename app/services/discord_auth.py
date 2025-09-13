@@ -87,9 +87,10 @@ class DiscordAuthService:
     ) -> User:
         """Crea un nuevo usuario con autenticación Discord"""
         # Extraer datos de Discord
+        # print(discord_data)
         discord_id = discord_data["id"]
         username = discord_data.get("username", "Discord User")
-        global_name = discord_data.get("global_name", username)
+        # global_name = discord_data.get("global_name", username)
         email = discord_data.get("email", "")
         avatar = discord_data.get("avatar")
 
@@ -99,25 +100,15 @@ class DiscordAuthService:
             avatar_url = f"https://cdn.discordapp.com/avatars/{discord_id}/{avatar}.png"
 
         # Separar nombre y apellido (Discord no tiene lastname)
-        name_parts = global_name.split(" ", 1)
-        name = name_parts[0]
-        lastname = name_parts[1] if len(name_parts) > 1 else ""
+        # name_parts = global_name.split(" ", 1)
+        # name = name_parts[0]
+        # lastname = name_parts[1] if len(name_parts) > 1 else ""
+        # if name is None:
+        name = username
+        # if lastname is None:
+        lastname = "Discord"
 
-        # Debug info (solo en desarrollo)
-        from app.core.config import settings as _settings
-        if _settings.DEBUG:
-            print(
-                "[DiscordAuth] Creating user:",
-                {
-                    "discord_id": discord_id,
-                    "email": email,
-                    "username": username,
-                    "global_name": global_name,
-                    "avatar_url": avatar_url,
-                },
-            )
-
-        # Crear usuario social
+        # print(name, lastname, email, avatar_url)
         user = User.create_social(
             name=name, lastname=lastname, email=email, image=avatar_url
         )
@@ -195,8 +186,24 @@ class DiscordAuthService:
         3. Busca o crea el usuario
         4. Retorna el usuario autenticado
         """
+        # [P1] Inicio del flujo con el code recibido
+        if settings.DEBUG:
+            print(
+                "[DiscordAuth][P1] Callback recibido",
+                {"code_prefix": (code[:8] + "...") if code else None, "redirect_uri": settings.DISCORD_REDIRECT_URI},
+            )
+
         # Obtener tokens
         token_data = await self.exchange_code_for_token(code)
+        if settings.DEBUG:
+            print(
+                "[DiscordAuth][P2] Intercambio de token",
+                {
+                    "success": token_data is not None,
+                    "has_access_token": bool(token_data and token_data.get("access_token")),
+                    "has_refresh_token": bool(token_data and token_data.get("refresh_token")),
+                },
+            )
         if not token_data:
             return None
 
@@ -208,6 +215,15 @@ class DiscordAuthService:
 
         # Obtener datos del usuario
         discord_user = await self.get_discord_user(access_token)
+        if settings.DEBUG:
+            print(
+                "[DiscordAuth][P3] Datos de usuario",
+                {
+                    "success": discord_user is not None,
+                    "id": discord_user.get("id") if discord_user else None,
+                    "email_present": bool(discord_user and discord_user.get("email")),
+                },
+            )
         if not discord_user:
             return None
 
@@ -225,6 +241,8 @@ class DiscordAuthService:
 
         if existing_user:
             # Usuario ya existe, actualizar tokens
+            if settings.DEBUG:
+                print("[DiscordAuth][P4] Decisión", {"branch": "login_by_provider"})
             self.update_discord_tokens(existing_user, access_token, refresh_token)
             return existing_user
 
@@ -234,6 +252,8 @@ class DiscordAuthService:
             if email_user:
                 # Según configuración, vincular o rechazar
                 if settings.ALLOW_SOCIAL_LINK_BY_EMAIL:
+                    if settings.DEBUG:
+                        print("[DiscordAuth][P4] Decisión", {"branch": "link_by_email"})
                     return self.link_discord_to_existing_user(
                         email_user, discord_id, access_token, refresh_token
                     )
@@ -242,4 +262,6 @@ class DiscordAuthService:
                     raise ValueError(f"User with email {email} already exists")
 
         # Crear nuevo usuario
+        if settings.DEBUG:
+            print("[DiscordAuth][P4] Decisión", {"branch": "create_new_user"})
         return self.create_discord_user(discord_user, access_token, refresh_token)

@@ -1,7 +1,8 @@
 @baseUrl = http://localhost:8000/api
-@user_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyIiwiZW1haWwiOiJjYXJsb3NAZGV2dGFsbGVzLmNvbSIsInJvbGUiOiJ1c2VyIiwiZXhwIjoxNzU3Nzc0MDIyfQ.TZX4J9t6YH-WTv2KNLYxOYf9RQNZY5V6j78ZxDL1atc
-@admin_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZW1haWwiOiJhZG1pbkBkZXZ0YWxsZXMuY29tIiwicm9sZSI6ImFkbWluIiwiZXhwIjoxNzU3NzczMjYyfQ.JCmkUU5oUPkuKmQyUiZtZ3j4_z8Q5prVpFVCa36Mmw0
 
+### Tokens created by fake users from seed.py
+@user_token = 
+@admin_token = 
 ######################## LOGIN  user and admin  ########################
 ### ✅ Login como admin
 POST {{baseUrl}}/auth/login
@@ -24,11 +25,12 @@ Content-Type: application/json
 
 ########################### POST  ###########################
 ### ✅ Obtener posts públicos (lista con paginación) 
-GET  {{baseUrl}}/posts?skip=0&limit=5
+GET  {{baseUrl}}/posts?skip=0&limit=10
 Authorization: Bearer {{admin_token}}
 
 ### ✅ Obtener un post específico por ID
-GET {{baseUrl}}/posts/1
+GET {{baseUrl}}/posts/
+
 
 ### ✅ Crear un nuevo post (usar token de admin o usuario normal en Authorization)
 POST  {{baseUrl}}/posts
@@ -36,13 +38,29 @@ Content-Type: application/json
 Authorization: Bearer {{user_token}}
 
 {
-  "title": "Nuevo post de prueba",
-  "description": "Contenido de prueba creado desde REST Client",
+  "title": "Nuevo post de usuario de discord",
+  "description": "Contenido de prueba creado desde REST Client DISCORD ",
   "content": "Este es el contenido del post de prueba. Aquí va el texto completo del post.",
   "category_id": 1,
   "tags": ["testing", "fastapi"]
 }
 
+### ✅ Actualizar un post existente
+PUT {{baseUrl}}/posts/8
+Content-Type: application/json
+Authorization: Bearer {{user_token}}
+
+{
+  "title": "Post actualizado",
+  "description": "Descripción editada",
+  "content": "Este es el contenido actualizado del post",
+  "category_id": 2,
+  "tags": ["fastapi", "update"]
+}
+
+### ✅ Eliminar un post existente
+DELETE {{baseUrl}}/posts/8
+Authorization: Bearer {{user_token}}
 
 ########################### COMMENT  ###########################
 ### Crear comentario en un post
@@ -85,3 +103,9 @@ Content-Type: application/json
 
 
 ########################### TAGS  ###########################
+
+
+
+
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{user_token}}

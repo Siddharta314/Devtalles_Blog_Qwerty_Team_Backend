@@ -1,5 +1,5 @@
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 
 from app.db import get_db
@@ -8,15 +8,16 @@ from app.schemas.auth import TokenData, UserPublic
 from app.services.user import UserService
 from app.utils.jwt import decode_access_token
 
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+security = HTTPBearer()
 
 
 def get_current_user(
-    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db),
 ) -> UserPublic:
     """Get current authenticated user from JWT token."""
     try:
+        token = credentials.credentials
         payload = decode_access_token(token)
         token_data = TokenData.model_validate(payload)
     except Exception:
@@ -50,9 +51,12 @@ def get_current_admin_user(
     return current_user
 
 
-def get_token_data(token: str = Depends(oauth2_scheme)) -> TokenData:
+def get_token_data(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+) -> TokenData:
     """Get token data without database lookup for performance."""
     try:
+        token = credentials.credentials
         payload = decode_access_token(token)
         return TokenData.model_validate(payload)
     except Exception:
