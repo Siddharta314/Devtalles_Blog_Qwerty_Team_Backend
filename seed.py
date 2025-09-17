@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 
 from app.db import SessionLocal, engine, Base
-from app.models.user import User, UserRole
+from app.models.user import User, UserRole, UserPosition
 from app.models.category import Category
 from app.models.tag import Tag
 from app.models.post import Post
@@ -39,22 +39,68 @@ def create_users(db: Session) -> dict[str, User]:
         password="admin123",
     )
     admin.role = UserRole.ADMIN
+    admin.description = "Administrador del sistema y desarrollador fullstack con más de 10 años de experiencia"
+    admin.position = UserPosition.FULLSTACK
+    admin.stack = "Python, JavaScript, React, Node.js, PostgreSQL, Docker"
     db.add(admin)
     users["admin"] = admin
 
     # Usuarios normales
     user_data = [
-        ("Carlos", "Azaustre", "carlos@devtalles.com", "carlos123"),
-        ("Fernando", "Herrera", "fernando@devtalles.com", "fernando123"),
-        ("Miguel", "Angel", "miguel@devtalles.com", "miguel123"),
-        ("Ana", "García", "ana@devtalles.com", "ana123"),
-        ("Luis", "Martín", "luis@devtalles.com", "luis123"),
+        (
+            "Carlos",
+            "Azaustre",
+            "carlos@devtalles.com",
+            "carlos123",
+            "Desarrollador frontend especializado en React y Vue.js",
+            UserPosition.FRONTEND,
+            "React, Vue.js, TypeScript, CSS, HTML",
+        ),
+        (
+            "Fernando",
+            "Herrera",
+            "fernando@devtalles.com",
+            "fernando123",
+            "Backend developer con experiencia en Python y Node.js",
+            UserPosition.BACKEND,
+            "Python, FastAPI, Node.js, Express, MongoDB",
+        ),
+        (
+            "Miguel",
+            "Angel",
+            "miguel@devtalles.com",
+            "miguel123",
+            "DevOps engineer y desarrollador fullstack",
+            UserPosition.DEVOPS,
+            "Docker, Kubernetes, AWS, Terraform, Python, Go",
+        ),
+        (
+            "Ana",
+            "García",
+            "ana@devtalles.com",
+            "ana123",
+            "Desarrolladora móvil con React Native y Flutter",
+            UserPosition.MOBILE,
+            "React Native, Flutter, JavaScript, Dart, Firebase",
+        ),
+        (
+            "Luis",
+            "Martín",
+            "luis@devtalles.com",
+            "luis123",
+            "Data scientist y desarrollador Python",
+            UserPosition.DATA,
+            "Python, Pandas, NumPy, Scikit-learn, TensorFlow, SQL",
+        ),
     ]
 
-    for name, lastname, email, password in user_data:
+    for name, lastname, email, password, description, position, stack in user_data:
         user = User.create_local(
             name=name, lastname=lastname, email=email, password=password
         )
+        user.description = description
+        user.position = position
+        user.stack = stack
         db.add(user)
         users[name.lower()] = user
 
@@ -65,6 +111,9 @@ def create_users(db: Session) -> dict[str, User]:
         email="discord@example.com",
         image="https://cdn.discordapp.com/avatars/123456789/avatar.png",
     )
+    discord_user.description = "Desarrollador que se unió a través de Discord OAuth"
+    discord_user.position = UserPosition.FULLSTACK
+    discord_user.stack = "JavaScript, TypeScript, React, Node.js"
     db.add(discord_user)
     users["discord"] = discord_user
 
@@ -485,10 +534,15 @@ No hay una respuesta única. Depende de:
         # Calcular fecha
         created_at = datetime.now() - timedelta(days=post_data["days_ago"])
 
+        # Calcular tiempo de lectura estimado (palabras / 200 palabras por minuto)
+        word_count = len(post_data["content"].split())
+        reading_time = max(1, word_count // 200)  # Mínimo 1 minuto
+
         post = Post(
             title=post_data["title"],
             description=post_data["description"],
             content=post_data["content"],
+            reading_time=reading_time,
             author_id=users[post_data["author"]].id,
             category_id=categories[post_data["category"]].id,
             created_at=created_at,
