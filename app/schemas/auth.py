@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
-from app.models.user import UserRole
+from app.models.user import UserRole, UserPosition
 from app.models.auth_provider import ProviderType
 
 
@@ -18,6 +18,9 @@ class UserPublic(BaseModel):
     email: EmailStr
     role: UserRole
     image: Optional[str] = None
+    description: Optional[str] = None
+    position: Optional[UserPosition] = None
+    stack: Optional[str] = None
     model_config = {"from_attributes": True}
 
 

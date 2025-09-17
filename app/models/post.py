@@ -13,8 +13,11 @@ class Post(TimestampMixin, Base):
     title: Mapped[str] = mapped_column(String(200), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
-    images: Mapped[list[str]] = mapped_column(JSON, nullable=False, server_default="[]")
+    images: Mapped[list[str]] = mapped_column(
+        JSON, nullable=False, server_default="'[]'::json"
+    )
     video: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    reading_time: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     author_id: Mapped[int] = mapped_column(
         ForeignKey("users.id"), nullable=False, index=True
     )

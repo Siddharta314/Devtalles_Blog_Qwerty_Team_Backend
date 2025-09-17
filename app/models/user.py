@@ -15,6 +15,17 @@ class UserRole(enum.Enum):
     USER = "user"
 
 
+class UserPosition(enum.Enum):
+    FRONTEND = "frontend"
+    BACKEND = "backend"
+    FULLSTACK = "fullstack"
+    DEVOPS = "devops"
+    MOBILE = "mobile"
+    DATA = "data"
+    DESIGN = "design"
+    OTHER = "other"
+
+
 class User(TimestampMixin, Base):
     __tablename__ = "users"
 
@@ -24,6 +35,11 @@ class User(TimestampMixin, Base):
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     hashed_password: Mapped[str | None] = mapped_column(String(512), nullable=True)
     image: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    description: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    position: Mapped[UserPosition | None] = mapped_column(
+        SQLEnum(UserPosition), nullable=True
+    )
+    stack: Mapped[str | None] = mapped_column(String(200), nullable=True)
     role: Mapped[UserRole] = mapped_column(
         SQLEnum(UserRole), default=UserRole.USER, nullable=False
     )
