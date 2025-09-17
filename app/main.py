@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routers import api_router
 from app.core.config import settings
 from app.core.exception_handlers import setup_exception_handlers
+from app.core.response_envelope import SuccessEnvelopeMiddleware
 
 
 app = FastAPI()
@@ -15,7 +16,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Register global exception handlers
 setup_exception_handlers(app)
+
+# Wrap successful responses
+app.add_middleware(SuccessEnvelopeMiddleware)
 
 
 @app.get("/")
