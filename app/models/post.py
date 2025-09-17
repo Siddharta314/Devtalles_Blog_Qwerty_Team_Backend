@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, Integer, String, Text, JSON
+from sqlalchemy import ForeignKey, Integer, String, Text, JSON, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import Optional
 
@@ -14,7 +14,7 @@ class Post(TimestampMixin, Base):
     description: Mapped[str] = mapped_column(Text, nullable=False)
     content: Mapped[str] = mapped_column(Text, nullable=False)
     images: Mapped[list[str]] = mapped_column(
-        JSON, nullable=False, server_default="'[]'::json"
+        JSON, nullable=False, server_default=text("'[]'::json")
     )
     video: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     reading_time: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
