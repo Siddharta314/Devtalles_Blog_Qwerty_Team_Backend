@@ -8,6 +8,7 @@ from app.schemas.auth import (
     LoginResponse,
     RegisterRequest,
     UserPublic,
+    UserAuthProviderResponse,
 )
 from app.services.user import UserService
 from app.services.discord_auth import DiscordAuthService
@@ -129,3 +130,32 @@ async def discord_callback(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Authentication process failed",
         )
+
+
+@auth_router.get("/provider/{user_id}", response_model=UserAuthProviderResponse)
+def get_user_auth_provider(
+    user_id: int, db: Session = Depends(get_db)
+) -> UserAuthProviderResponse:
+    """Obtener el proveedor de autenticación de un usuario"""
+    user_service = UserService(db)
+
+    # Verificar que el usuario existe
+    user = user_service.get_user_by_id(user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado"
+        )
+
+    # Buscar el proveedor de autenticación
+    auth_provider = user_service.get_user_auth_provider(user_id)
+
+    if auth_provider:
+        # Usuario registrado con proveedor social
+        return UserAuthProviderResponse(
+            user_id=user_id,
+            provider=auth_provider.provider.value,
+            provider_id=auth_provider.provider_id,
+        )
+    else:
+        # Usuario registrado con email/password
+        return UserAuthProviderResponse(user_id=user_id, provider="local")

@@ -68,3 +68,9 @@ class UserService:
         if user.auth_provider:
             return user.auth_provider.provider
         return None
+
+    def get_user_auth_provider(self, user_id: int) -> Optional[AuthProvider]:
+        """Obtener el proveedor de autenticación de un usuario por su ID"""
+        return (
+            self.db.query(AuthProvider).filter(AuthProvider.user_id == user_id).first()
+        )

@@ -55,6 +55,14 @@ class AuthProviderPublic(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class UserAuthProviderResponse(BaseModel):
+    """Respuesta del proveedor de autenticación de un usuario"""
+
+    user_id: int
+    provider: str  # "discord", "google", etc. o "local"
+    provider_id: Optional[str] = None  # Solo para proveedores sociales
+
+
 class LoginResponse(BaseModel):
     user: UserPublic
     access_token: str
