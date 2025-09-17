@@ -1,56 +1,80 @@
 ```mermaid
 erDiagram
-	direction TB
-	USUARIO {
-		int id PK ""  
-		string name  ""  
-		string lastname  ""  
-		string email  ""  
-		string password  ""  
+    direction TB
+
+    USERS {
+        int id PK ""  
+        string name ""  
+        string lastname ""  
+        string email  ""  
+        string hashed_password ""  
+        string image ""  
+        enum role ""  
 		string description  ""  
 		enum position  ""  
 		string stack  ""  
-	}
-	ROLES {
-		int id PK ""  
-		enum name  ""  
-	}
-	POST {
-		int id PK ""  
-		string title  ""  
-		string description  ""  
-		string images  ""  
-		string video  ""  
-	}
-	COMENTS {
-		int id PK ""  
-		string content  ""  
-	}
-	LIKES {
-		int id PK ""  
-		boolean like  ""  
-	}
-	TAGS {
-		int id PK ""  
-		string nombre  ""  
-	}
-	IMAGES {
-		int id PK ""  
-		string url  ""  
-	}
-	CATEGORIAS {
-		int id PK ""  
-		string nombre  ""  
-	}
+    }
 
-	USUARIO||--o{POST:"crea"
-	USUARIO||--o{COMENTS:"escribe"
-	USUARIO||--o{LIKES:"hace"
-	ROLES||--o{USUARIO:"asigna"
-	POST||--o{COMENTS:"tiene"
-	POST||--o{LIKES:"recibe"
-	POST||--o{TAGS:"tiene"
-	POST||--o{IMAGES:"contiene"
-	POST}o--||CATEGORIAS:"pertenece"
+    AUTH_PROVIDERS {
+        int id PK ""  
+        int user_id FK  ""  
+        enum provider ""  
+        string provider_id ""  
+        string access_token ""  
+        string refresh_token ""  
+    }
+
+    CATEGORIES {
+        int id PK ""  
+        string name  ""  
+        string description ""  
+    }
+
+    TAGS {
+        int id PK ""  
+        string name  ""  
+    }
+
+    POSTS {
+        int id PK ""  
+        string title ""  
+        string description ""  
+        string content ""  
+        string images ""  
+        string video ""
+		int reading_time ""
+        int author_id FK ""  
+        int category_id FK ""  
+    }
+
+    COMMENTS {
+        int id PK ""  
+        string content ""  
+        int author_id FK ""  
+        int post_id FK ""  
+    }
+
+    LIKES {
+        int user_id FK ""  
+        int post_id FK ""  
+    }
+
+    POST_TAGS {
+        int post_id FK ""  
+        int tag_id FK ""  
+    }
+
+    USERS ||--o{ POSTS : "author"
+    USERS ||--o{ COMMENTS : "writes"
+    USERS ||--o{ LIKES : "likes"
+    USERS ||--|| AUTH_PROVIDERS : "has"
+
+    CATEGORIES ||--o{ POSTS : "contains"
+
+    POSTS ||--o{ COMMENTS : "has"
+    POSTS ||--o{ LIKES : "receives"
+    POSTS ||--o{ POST_TAGS : "has"
+
+    TAGS ||--o{ POST_TAGS : "tagged"
+
 ```
-
