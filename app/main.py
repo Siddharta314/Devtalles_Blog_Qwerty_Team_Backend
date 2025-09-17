@@ -2,10 +2,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import api_router
 from app.core.config import settings
+from app.core.exception_handlers import setup_exception_handlers
+
 
 app = FastAPI()
 
-# CORS for browser-based frontends
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.ALLOWED_ORIGINS,
@@ -13,6 +14,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+setup_exception_handlers(app)
 
 
 @app.get("/")
