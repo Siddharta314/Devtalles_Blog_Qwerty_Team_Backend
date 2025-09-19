@@ -6,7 +6,7 @@ from app.db import get_db
 from app.dependencies.auth import (
     get_current_user,
     get_token_data,
-    get_current_admin_user,
+    # get_current_admin_user,
 )
 from app.models.user import UserRole
 from app.schemas.auth import UserPublic, TokenData
@@ -49,9 +49,8 @@ def get_posts(
     limit: int = Query(10, ge=1, le=100),
     author_id: Optional[int] = Query(None),
     db: Session = Depends(get_db),
-    current_user: UserPublic = Depends(get_current_admin_user),
 ) -> PostList:
-    """Get posts with pagination and optional author filter."""
+    """Get posts with pagination and optional author filter. Public endpoint."""
     post_service = PostService(db)
 
     posts = post_service.get_posts(skip=skip, limit=limit, author_id=author_id)

@@ -72,7 +72,7 @@ uv run alembic current
 
 ### Posts
 * POST `/api/posts/` -> Crear un nuevo post. 🔒 Requiere autenticación (token). Soporta `tags` (array de strings) que se crean automáticamente si no existen.
-* GET `/api/posts/` -> Listar posts con paginación (`skip`, `limit`) y filtro opcional por autor. 🔒 Solo accesible por admin.
+* GET `/api/posts/` -> Listar posts con paginación (`skip`, `limit`) y filtro opcional por autor. ✅ Público.
 * GET `/api/posts/{id}` -> Obtener un post específico por su ID. ✅ Público. Incluye tags asociados.
 * PUT `/api/posts/{id}` -> Actualizar un post existente. 🔒 Requiere autenticación y ser el autor o admin. Soporta `tags` (reemplaza lista completa).
 * DELETE `/api/posts/{id}` -> Eliminar (soft delete) un post. 🔒 Requiere autenticación y ser el autor o admin.
