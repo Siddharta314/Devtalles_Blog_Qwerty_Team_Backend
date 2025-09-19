@@ -74,3 +74,76 @@ class UserService:
         return (
             self.db.query(AuthProvider).filter(AuthProvider.user_id == user_id).first()
         )
+
+    def create_or_update_discord_user(
+        self,
+        name: str,
+        email: str,
+        image: Optional[str],
+        provider_id: str,
+        access_token: str,
+        refresh_token: Optional[str] = None,
+    ) -> tuple[User, AuthProvider]:
+        """
+        Crear o actualizar usuario Discord para NextAuth custom flow.
+        Retorna (user, auth_provider)
+        """
+        # Buscar usuario existente por email
+        user = self.get_user_by_email(email)
+
+        if user:
+            # Usuario existe, verificar si ya tiene auth_provider
+            auth_provider = self.get_user_auth_provider(user.id)
+
+            if auth_provider:
+                # Actualizar tokens existentes
+                auth_provider.access_token = access_token
+                auth_provider.refresh_token = refresh_token
+                self.db.commit()
+                self.db.refresh(auth_provider)
+            else:
+                # Crear nuevo auth_provider para usuario existente
+                auth_provider = AuthProvider(
+                    user_id=user.id,
+                    provider=ProviderType.DISCORD,
+                    provider_id=provider_id,
+                    access_token=access_token,
+                    refresh_token=refresh_token,
+                )
+                self.db.add(auth_provider)
+                self.db.commit()
+                self.db.refresh(auth_provider)
+        else:
+            # Crear nuevo usuario social
+            # Dividir name en name y lastname de forma segura
+            try:
+                name_parts = name.strip().split(" ", 1)
+                first_name = name_parts[0] if name_parts[0] else "Usuario"
+                last_name = (
+                    name_parts[1] if len(name_parts) > 1 and name_parts[1] else ""
+                )
+            except (IndexError, AttributeError):
+                # Fallback si hay algún problema con el name
+                first_name = name.strip() if name else "Usuario"
+                last_name = ""
+
+            user = User.create_social(
+                name=first_name, lastname=last_name, email=email, image=image
+            )
+            self.db.add(user)
+            self.db.flush()  # Para obtener el ID
+
+            # Crear auth_provider
+            auth_provider = AuthProvider(
+                user_id=user.id,
+                provider=ProviderType.DISCORD,
+                provider_id=provider_id,
+                access_token=access_token,
+                refresh_token=refresh_token,
+            )
+            self.db.add(auth_provider)
+            self.db.commit()
+            self.db.refresh(user)
+            self.db.refresh(auth_provider)
+
+        return user, auth_provider

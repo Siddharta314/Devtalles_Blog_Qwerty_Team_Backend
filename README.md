@@ -63,6 +63,13 @@ uv run alembic current
 ### Auth
 * POST `/api/auth/register` -> registro: valida email único, crea usuario con password hasheado.
 * POST `/api/auth/login`    -> login: verifica credenciales y retorna datos del usuario.
+* GET `/api/auth/discord/login` -> redirige a Discord OAuth2 para autenticación social.
+* GET `/api/auth/discord/callback` -> callback de Discord OAuth2, crea/actualiza usuario y retorna JWT.
+* GET `/api/auth/provider/{user_id}` -> obtener el proveedor de autenticación de un usuario (local o social).
+* POST `/api/auth/discord/custom-login` -> endpoint personalizado para NextAuth: recibe token y account directamente del frontend, crea/actualiza usuario Discord y retorna datos con auth_provider_id.
+* GET `/api/auth/discord/custom-user/{user_id}` -> obtener datos del usuario con auth_provider_id para NextAuth.
+
+
 ### Posts
 * POST `/api/posts/` -> Crear un nuevo post. 🔒 Requiere autenticación (token). Soporta `tags` (array de strings) que se crean automáticamente si no existen.
 * GET `/api/posts/` -> Listar posts con paginación (`skip`, `limit`) y filtro opcional por autor. 🔒 Solo accesible por admin.
@@ -128,6 +135,7 @@ uv run alembic current
 - ✅ Migración a PostgreSQL (modo producción)
 - ✅ Alembic
 - ✅ Social Login (Discord)
+- ✅ Endpoints personalizados para NextAuth Discord
 - ✅ Crear archivo `requests.http` para probar todos los endpoints desde VSCode REST Client
 
 ### 🚧 En progreso
