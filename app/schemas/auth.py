@@ -68,3 +68,42 @@ class LoginResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
     auth_provider: Optional[ProviderType] = None
+
+
+# Schemas para NextAuth Discord custom flow
+class NextAuthToken(BaseModel):
+    """Token de NextAuth con datos del usuario"""
+
+    name: str
+    email: str
+    picture: Optional[str] = None
+    sub: str  # Discord user ID
+
+
+class NextAuthAccount(BaseModel):
+    """Account de NextAuth con datos del proveedor"""
+
+    provider: str
+    providerAccountId: str
+    access_token: str
+    refresh_token: Optional[str] = None
+    expires_at: Optional[int] = None
+
+
+class DiscordCustomLoginRequest(BaseModel):
+    """Request para el endpoint custom de Discord login"""
+
+    token: NextAuthToken
+    account: NextAuthAccount
+
+
+class DiscordCustomUserResponse(BaseModel):
+    """Response para el endpoint custom de Discord user"""
+
+    id: int
+    name: str
+    email: str
+    image: Optional[str] = None
+    role: UserRole
+    auth_provider_id: Optional[int] = None
+    model_config = {"from_attributes": True}

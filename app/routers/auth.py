@@ -9,6 +9,8 @@ from app.schemas.auth import (
     RegisterRequest,
     UserPublic,
     UserAuthProviderResponse,
+    DiscordCustomLoginRequest,
+    DiscordCustomUserResponse,
 )
 from app.services.user import UserService
 from app.services.discord_auth import DiscordAuthService
@@ -159,3 +161,73 @@ def get_user_auth_provider(
     else:
         # Usuario registrado con email/password
         return UserAuthProviderResponse(user_id=user_id, provider="local")
+
+
+# Endpoints personalizados para NextAuth Discord flow
+@auth_router.post("/discord/custom-login", response_model=DiscordCustomUserResponse)
+def discord_custom_login(
+    request: DiscordCustomLoginRequest, db: Session = Depends(get_db)
+) -> DiscordCustomUserResponse:
+    """
+    Endpoint personalizado para NextAuth Discord flow.
+    Recibe token y account directamente del frontend.
+    """
+    user_service = UserService(db)
+
+    try:
+        # Crear o actualizar usuario Discord
+        user, auth_provider = user_service.create_or_update_discord_user(
+            name=request.token.name,
+            email=request.token.email,
+            image=request.token.picture,
+            provider_id=request.account.providerAccountId,
+            access_token=request.account.access_token,
+            refresh_token=request.account.refresh_token,
+        )
+
+        return DiscordCustomUserResponse(
+            id=user.id,
+            name=user.name,
+            email=user.email,
+            image=user.image,
+            role=user.role,
+            auth_provider_id=auth_provider.id,
+        )
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Error al procesar login de Discord: {str(e)}",
+        )
+
+
+@auth_router.get(
+    "/discord/custom-user/{user_id}", response_model=DiscordCustomUserResponse
+)
+def get_discord_custom_user(
+    user_id: int, db: Session = Depends(get_db)
+) -> DiscordCustomUserResponse:
+    """
+    Obtener datos del usuario con auth_provider_id para NextAuth.
+    """
+    user_service = UserService(db)
+
+    # Verificar que el usuario existe
+    user = user_service.get_user_by_id(user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado"
+        )
+
+    # Obtener auth_provider
+    auth_provider = user_service.get_user_auth_provider(user_id)
+    auth_provider_id = auth_provider.id if auth_provider else None
+
+    return DiscordCustomUserResponse(
+        id=user.id,
+        name=user.name,
+        email=user.email,
+        image=user.image,
+        role=user.role,
+        auth_provider_id=auth_provider_id,
+    )
