@@ -164,10 +164,10 @@ def get_user_auth_provider(
 
 
 # Endpoints personalizados para NextAuth Discord flow
-@auth_router.post("/discord/custom-login", response_model=DiscordCustomUserResponse)
+@auth_router.post("/discord/custom-login", response_model=LoginResponse)
 def discord_custom_login(
     request: DiscordCustomLoginRequest, db: Session = Depends(get_db)
-) -> DiscordCustomUserResponse:
+) -> LoginResponse:
     """
     Endpoint personalizado para NextAuth Discord flow.
     Recibe token y account directamente del frontend.
@@ -185,13 +185,21 @@ def discord_custom_login(
             refresh_token=request.account.refresh_token,
         )
 
-        return DiscordCustomUserResponse(
-            id=user.id,
-            name=user.name,
-            email=user.email,
-            image=user.image,
-            role=user.role,
-            auth_provider_id=auth_provider.id,
+        # Crear JWT con información del usuario
+        access_token = create_access_token(
+            data={
+                "sub": str(user.id),
+                "email": user.email,
+                "role": user.role.value,
+                "auth_provider": ProviderType.DISCORD.value,
+            }
+        )
+
+        return LoginResponse(
+            user=UserPublic.model_validate(user),
+            access_token=access_token,
+            token_type="bearer",
+            auth_provider=ProviderType.DISCORD,
         )
 
     except Exception as e:
