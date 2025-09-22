@@ -5,46 +5,81 @@
 * SQLAlchemy
 * PostgreSQL 
 * uv
-
+* Docker
 
 
 ## 🚀 Instalación y Configuración
 
-### 🔧 Desarrollo Local
+El proyecto se puede ejecutar de **2 formas**:
 
-1. **Instalar dependencias con uv**
+### 🔧 Opción 1: Desarrollo Local (UV + Docker DB)
+
+**Recomendado para desarrollo** - Backend con UV, Base de datos con Docker
+
+0. **Configurar variables de entorno**
+   ```bash
+   cp env.example .env
+   # Editar .env con tus configuraciones locales
+   mv docker-compose.override.yml.example docker-compose.override.yml
+   ```
+
+1. **Instalar dependencias con UV**
    ```bash
    uv sync
    ```
-2. **Configurar variables de entorno**
+
+2. **Inicializar la base de datos**
    ```bash
-   cp env.example .env
-   # Editar .env con tus configuraciones
-   ```
-3. **Inicializar la base de datos con Alembic**
-   ```bash
-   # Iniciar PostgreSQL con Docker
+   # Iniciar solo PostgreSQL con Docker
    docker compose up -d db
    
    # Aplicar migraciones (desde el host)
    DATABASE_URL=postgresql://devtalles:devtalles@localhost:5432/devtalles_blog uv run alembic upgrade head
    ```
-4. **Ejecutar el servidor**
+
+3. **Ejecutar el servidor**
    ```bash
-   uv run uvicorn app.main:app --reload
+   uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
    ```
 
-### 🐳 Con Docker
+### 🐳 Opción 2: Todo con Docker Compose
+
+**Recomendado para producción** - Todo containerizado
+
+0. **Configurar variables de entorno**
+   ```bash
+   cp env.example .env.docker
+   # Editar .env.docker con configuraciones para Docker
+   ```
 
 1. **Ejecutar con Docker Compose**
    ```bash
    docker compose up
    ```
+
 2. **Aplicar migraciones (primera vez)**
    ```bash
    docker compose exec backend uv run alembic upgrade head
    ```
 
+**Nota**: El archivo `docker-compose.override.yml` deshabilita nginx y expone el puerto de PostgreSQL para desarrollo local.
+
+## ✅ Verificación
+
+Una vez ejecutado, el servidor estará disponible en:
+- **API**: http://localhost:8000
+- **Documentación**: http://localhost:8000/docs
+- **Base de datos**: localhost:5432 (solo en desarrollo local)
+
+## 🌱 Seed (Datos de Prueba)
+* Local 
+```bash
+ uv run python seed.py 
+```
+* Docker compose
+```bash
+ docker compose exec backend uv run python seed.py 
+```
 ### 📋 Migraciones con Alembic
 
 ```bash
@@ -137,12 +172,8 @@ uv run alembic current
 - ✅ Social Login (Discord)
 - ✅ Endpoints personalizados para NextAuth Discord
 - ✅ Crear archivo `requests.http` para probar todos los endpoints desde VSCode REST Client
+- ✅ Roles de usuario (`admin`, `user`) con autorización en rutas protegidas
+- ✅ Despliegue en servicio cloud
 
-### 🚧 En progreso
-- 🚧 Añadir filtros y búsqueda de posts (categoría, tag, texto)
-- 🚧 Subida y gestión de imágenes en posts
-- 🚧 Roles de usuario (`admin`, `user`) con autorización en rutas protegidas
-- 🚧 Tests automáticos con Pytest
-- 🚧 Despliegue en servicio cloud
 
 ---
